@@ -1,0 +1,11 @@
+Pytanie: “Kto zabił Kennedy’ego?”
+
+1. Interpretacja pytania (ustalenie czym jest to o co pytamy, wyłowienie “słów kluczowych” do dalszej analizy).
+2. Poszukiwanie odmian słów kluczowych.
+3. Poszukiwanie synonimów (słów kluczowych i ich odmian).
+4. Ustalenie wag dla poszczególnych słów kluczowych, ich występowania, zależności, itp.
+5. Nadanie wag zdaniom na podstawie występowania słów kluczowych, słów pasujących do wzorca wyszukiwania (np. nazwisko, ale nie występujące w zbiorze słów kluczowych), względnej odległości tych informacji w tekście od siebie  (odległość w ilości słów względem średniej długości zdania w tekście). Pamiętać o zaprzeczeniach!
+6. Posortowanie zdań według nadanych im wag.
+7. Wyszukiwanie ustalonych obiektów (nazwisk bez Kennedy’ego) i ich odmian w zdaniach z nadanymi wagami.
+8. Zsumowanie dla odnalezionych obiektów wag zdań, w których się znalazły (dla określonej części zdań z najwyższymi wagami)
+9. Zwrócenie listy obiektów (w tym przypadku - nazwisk) i wskazanie obiektu, którego suma wag jest największa i jest prawdopodobnie odpowiedzią na zadanie pytanie.
