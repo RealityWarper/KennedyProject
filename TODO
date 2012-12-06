@@ -1,16 +1,28 @@
 okej, calosc tak:
 
-glowny program do ktorego doczepimy moduly z implementacjami funkcji zajmujacymi sie konkretnymi zadaniami
+glowny program do ktorego doczepimy moduly z implementacjami funkcji
+zajmujacymi sie konkretnymi zadaniami
 
 patrzec na ALGORYTM jak piszemy program
 
-potrzebne moduly/fukncje:
+potrzebne moduly/funkcje:
 
-- wylawiacz slow kluczowych z pytania (+odmiany, synonimy i odmiany synonimow, uzywa slownikow), zwraca fragment slownika jako liste, liste dwuwymiarowa albo cokolwiek
-- wagookreslacz dla slow kluczowych, nie wiem na razie dokladnie jak, najlepiej gdyby zwracal slownik (strukture) w formie { "slowo" : waga }
-- tekstociachacz na zdania (glownie kropki, uwazac na wykrzykniki, znaki zapytania, skroty, ..., itp.)
-- zdaniowartosciozliczacz z uzyciem okreslonych wczesniej wag oraz innych metod (odleglosci) i pokrojonego tekstu
-- obiektoposzukiwacz do znalezienia terminow (nazwiska mordercy) w najwyzej ocenionej czesci zdan
+- wylawiacz slow kluczowych z pytania (+odmiany, synonimy i odmiany
+  synonimow, uzywa slownikow), zwraca fragment slownika jako liste,
+  liste dwuwymiarowa albo cokolwiek
+
+- wagookreslacz dla slow kluczowych, nie wiem na razie dokladnie jak,
+  najlepiej gdyby zwracal slownik (strukture) w formie { "slowo" : waga }
+
+- tekstociachacz na zdania (glownie kropki, uwazac na wykrzykniki, znaki
+  zapytania, skroty, ..., itp.)
+
+- zdaniowartosciozliczacz z uzyciem okreslonych wczesniej wag oraz innych
+  metod (odleglosci) i pokrojonego tekstu
+
+- obiektoposzukiwacz do znalezienia terminow (nazwiska mordercy) w najwyzej
+  ocenionej czesci zdan
+
 - printy do wszystkiego zeby mozna pokazac jak to w trakcie dziala
 
 - wszystko inne o czym zapomnialem
