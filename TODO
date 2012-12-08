@@ -7,6 +7,11 @@ patrzec na ALGORYTM jak piszemy program
 
 potrzebne moduly/funkcje:
 
+- obsluga polskich znakow w tekscie - albo sie z nimi meczymy,
+  albo robimy pary (zdanie, zdanie bez polskich znakow) i calosc wyszukiwania
+  wykonujemy na zdaniu obranym z ogonkow, potem tylko trzeba bedzie
+  dodatkowo sprawdzic czy Oswald to nie Óśwałd
+
 - wylawiacz slow kluczowych z pytania (+odmiany, synonimy i odmiany
   synonimow, uzywa slownikow), zwraca fragment slownika jako liste,
   liste dwuwymiarowa albo cokolwiek
