@@ -7,6 +7,17 @@ patrzec na ALGORYTM jak piszemy program
 
 potrzebne moduly/funkcje:
 
+- googlopobieracz tekstow otrzymanych z pytania wyslanego do google
+
+- obsluga polskich znakow w tekscie - albo sie z nimi meczymy,
+  albo robimy pary (zdanie, zdanie bez polskich znakow) i calosc wyszukiwania
+  wykonujemy na zdaniu obranym z ogonkow, potem tylko trzeba bedzie
+  dodatkowo sprawdzic czy Oswald to nie Óśwałd
+
+- trzeba tez sprawdzic jakie jest kodowanie tekstu z ktorego korzystamy,
+  jak dostaniemy gotowy to zapytac, a jak wyszukiwany z neta to powinno to byc
+  w meta info strony
+
 - wylawiacz slow kluczowych z pytania (+odmiany, synonimy i odmiany
   synonimow, uzywa slownikow), zwraca fragment slownika jako liste,
   liste dwuwymiarowa albo cokolwiek
