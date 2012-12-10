@@ -2,11 +2,112 @@
 
 from __future__ import print_function
 from sys import argv
+import codecs
+import re
+
+BLOCKSIZE = 1048576 # 1 MB text buffer
+
+def Unique(seq):
+    """Returns unique elements from a list without changing order."""
+    seen = set()
+    for item in seq:
+        if item not in seen:
+            seen.add(item)
+            yield item
+
+def GetEntries(word, dic):
+    """Combs dictionary for lines containing specified word.
+       Returns a list of unique semicolon separated entries from those lines."""
+
+    entries = [line.rstrip("\n\r") for line in dic if re.search(";%s;" % (word), line)]
+
+    entries = [word for line in entries for word in line.split(";") if word]
+
+    entries[:] = Unique(entries)
+
+    if not entries:
+        entries = [word]
+
+    return entries
+
+def ExtractKeywords(question):
+    """Returns a list of X, Y and Z synonyms and their inflections
+       from a given question string, expects "Kto X Y w Z?" format."""
+
+    synonyms = [ [] , [] , [] ]
+    weights = [ 60, 30, 20 ]
+
+    with open("odmiany.txt", "r") as dic:
+        dic = [ReplaceDiacritics(line) for line in dic.readlines()]
+
+    with open("thesaurus.txt", "r") as dic2:
+        dic2 = [ReplaceDiacritics(line) for line in dic2.readlines()]
+
+    match = re.search("Kto (.+) (.+) w (.+)\?", ReplaceDiacritics(question))
+
+    if match:
+        keywords = [GetEntries(word, dic)[0] for word in match.group(1,2,3)]
+        keywords_and_synonyms = [GetEntries(word, dic2) for word in keywords]
+
+        for x in range(len(keywords_and_synonyms)):
+            if not keywords_and_synonyms[x]:
+                keywords_and_synonyms[x].append(keywords[x])
+
+        for x in range(len(keywords_and_synonyms)):
+            for element in keywords_and_synonyms[x]:
+                synonyms[x].extend(GetEntries(element, dic))
+
+        result = dict()
+
+        for x in range(len(weights)):
+            for y in synonyms[x]:
+                result[y] = weights[x]
+
+        return result
+
+def EncodeAsUTF8(text_file, source_encoding):
+    """Re-encodes given text file from specified encoding into UTF-8.
+       Appends "_utf8" at the end of resulting text file."""
+
+    if len(text_file.split(".")) > 1:
+        trgt_name = ".".join(text_file.split(".")[:-1])
+        trgt_name += "_utf8." + text_file.split(".")[-1]
+
+    else:
+        trgt_name = text_file + "_utf8"
+
+    with codecs.open(text_file, "r", source_encoding) as src:
+        with codecs.open(trgt_name, "w", "utf-8") as trgt:
+            while True:
+                contents = src.read(BLOCKSIZE)
+                if not contents:
+                    break
+                trgt.write(contents)
 
 def ReplaceAll(text, dic):
+    """Replaces all occurrences of characters in the text
+       according to the rules specified in the dictionary.
+
+       Dictionary syntax: { "<char_to_be_replaced>" : "<replacement>" , ... }"""
+
     for i, j in dic.iteritems():
         text = text.replace(i, j)
     return text
+
+def ReplaceDiacritics(string):
+    """Replaces diacritics in a given UTF-8 string."""
+
+    pol2eng = { "\xc4\x85" : "a" , "\xc4\x84" : "A" ,
+                "\xc5\xbc" : "z" , "\xc5\xbb" : "Z" ,
+                "\xc5\xba" : "z" , "\xc5\xb9" : "Z" ,
+                "\xc5\x82" : "l" , "\xc5\x81" : "L" ,
+                "\xc4\x87" : "c" , "\xc4\x86" : "C" ,
+                "\xc5\x84" : "n" , "\xc5\x83" : "N" ,
+                "\xc4\x99" : "e" , "\xc4\x98" : "E" ,
+                "\xc5\x9b" : "s" , "\xc5\x9a" : "S" ,
+                "\xc3\xb3" : "o" , "\xc3\x93" : "O" }
+
+    return ReplaceAll(string, pol2eng)
 
 def WeightCounter(text_line, weights):
     weight = 0
@@ -23,27 +124,16 @@ if __name__ == "__main__":
         print("usage: %s FILENAME" % (argv[0]))
 
     else:
-        keyword_weights = { "Kennedy" : 30 , "zabi" : 60 , "Dallas" : 20 , "mord" : 60 }
-
-        # ponizsze przelozenia dzialaja, ale tylko przy pliku kodowanym w utf-8
-        # np. odmiany.txt mamy juz kodowane czyms innym
-
-        pol2eng = { "\xc4\x85" : "a" , "\xc4\x84" : "A" ,
-                    "\xc5\xbc" : "z" , "\xc5\xbb" : "Z" ,
-                    "\xc5\xba" : "z" , "\xc5\xb9" : "Z" ,
-                    "\xc5\x82" : "l" , "\xc5\x81" : "L" ,
-                    "\xc4\x87" : "c" , "\xc4\x86" : "C" ,
-                    "\xc5\x84" : "n" , "\xc5\x83" : "N" ,
-                    "\xc4\x99" : "e" , "\xc4\x98" : "E" ,
-                    "\xc5\x9b" : "s" , "\xc5\x9a" : "S" ,
-                    "\xc3\xb3" : "o" , "\xc3\x93" : "O" }
-
         text_file = argv[1]
+
+        temp = raw_input("Dawaj pytanie: ")
 
         with open(text_file, "r") as src:
             lines = src.readlines()
 
-        lines = [ReplaceAll(line, pol2eng) for line in lines]
+        lines = [ReplaceDiacritics(line) for line in lines]
+
+        keyword_weights = ExtractKeywords(temp)
 
         results = [WeightCounter(line, keyword_weights) for line in lines]
 
@@ -52,3 +142,4 @@ if __name__ == "__main__":
         for result in results:
             if result[0] != 0:
                 print("Waga: %d\n%s" % (result[0], result[1]))
+
