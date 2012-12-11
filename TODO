@@ -1,3 +1,5 @@
+LAST UPDATE: 15:29 11.12.2012
+
 okej, calosc tak:
 
 glowny program do ktorego doczepimy moduly z implementacjami funkcji
@@ -12,23 +14,24 @@ potrzebne moduly/funkcje:
 - okreslanie kodowania tekstu: z neta bedzie w meta info strony,
   ale od profesora to nie wiem, trzeba spytac
 
-- obsluga polskich znakow w tekscie - albo sie z nimi meczymy,
-  albo robimy pary (zdanie, zdanie bez polskich znakow) i calosc wyszukiwania
-  wykonujemy na zdaniu obranym z ogonkow, potem tylko trzeba bedzie
-  dodatkowo sprawdzic czy Oswald to nie Óśwałd
 
-- wylawiacz slow kluczowych z pytania (+odmiany, synonimy i odmiany
-  synonimow, uzywa slownikow), zwraca fragment slownika jako liste,
-  liste dwuwymiarowa albo cokolwiek
+JEST - obsluga polskich znakow w tekscie - albo sie z nimi meczymy,
+       albo robimy pary (zdanie, zdanie bez polskich znakow) i calosc wyszukiwania
+       wykonujemy na zdaniu obranym z ogonkow, potem tylko trzeba bedzie
+       dodatkowo sprawdzic czy Oswald to nie Óśwałd
 
-- wagookreslacz dla slow kluczowych, nie wiem na razie dokladnie jak,
-  najlepiej gdyby zwracal slownik (strukture) w formie { "slowo" : waga }
+JEST - wylawiacz slow kluczowych z pytania (+odmiany, synonimy i odmiany
+       synonimow, uzywa slownikow), zwraca fragment slownika jako liste,
+       liste dwuwymiarowa albo cokolwiek
+
+JEST CZESCIOWO - wagookreslacz dla slow kluczowych, nie wiem na razie dokladnie jak,
+                 najlepiej gdyby zwracal slownik (strukture) w formie { "slowo" : waga }
 
 - tekstociachacz na zdania (glownie kropki, uwazac na wykrzykniki, znaki
   zapytania, skroty, ..., itp.)
 
-- zdaniowartosciozliczacz z uzyciem okreslonych wczesniej wag oraz innych
-  metod (odleglosci) i pokrojonego tekstu
+JEST - zdaniowartosciozliczacz z uzyciem okreslonych wczesniej wag oraz innych
+       metod (odleglosci) i pokrojonego tekstu
 
 - obiektoposzukiwacz do znalezienia terminow (nazwiska mordercy) w najwyzej
   ocenionej czesci zdan
