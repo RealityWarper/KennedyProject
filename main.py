@@ -132,7 +132,6 @@ def GetSentences(text):
                 Shortcuts.append(word)
 	
     wordList = text.split()
-
     for word in wordList:
         Sentence = Sentence + ' ' + word
         if re.match('\w+[\.\?\!]', word) and not re.match('[0-9]{2}\.',word) and not re.match('[A-Z]\.',word) and word not in Shortcuts:
