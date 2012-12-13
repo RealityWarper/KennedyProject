@@ -44,6 +44,7 @@ def ExtractKeywords(question):
         dic2 = [ReplaceDiacritics(line) for line in dic2.readlines()]
 
     match = re.search("Kto (.+) (.+) w (.+)\?", ReplaceDiacritics(question))
+    result = dict()
 
     if match:
         keywords = [GetEntries(word, dic)[0] for word in match.group(1,2,3)]
@@ -57,13 +58,12 @@ def ExtractKeywords(question):
             for element in keywords_and_synonyms[x]:
                 synonyms[x].extend(GetEntries(element, dic))
 
-        result = dict()
 
         for x in range(len(weights)):
             for y in synonyms[x]:
                 result[y] = weights[x]
 
-        return result
+    return result
 
 def EncodeAsUTF8(text_file, source_encoding):
     """Re-encodes given text file from specified encoding into UTF-8.
@@ -142,4 +142,3 @@ if __name__ == "__main__":
         for result in results:
             if result[0] != 0:
                 print("Waga: %d\n%s" % (result[0], result[1]))
-
