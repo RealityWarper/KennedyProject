@@ -118,6 +118,28 @@ def WeightCounter(text_line, weights):
 
     return (weight, text_line)
 
+def GetSentences(text):
+    """Returns a list of sentences from a given text."""
+	
+    ListOfSentences = []
+    Sentence = ''
+    Shortcuts = []
+
+    with open("odmiany.txt","r") as dic:
+        for line in dic.readlines():
+            word = line.split(';')[1]
+            if re.match('\w+\.', word):
+                Shortcuts.append(word)
+	
+    wordList = text.split()
+
+    for word in wordList:
+        Sentence = Sentence + ' ' + word
+        if re.match('\w+[\.\?\!]', word) and not re.match('[0-9]{2}\.',word) and not re.match('[A-Z]\.',word) and word not in Shortcuts:
+            ListOfSentences.append(Sentence.strip())
+            Sentence = ''
+
+    return ListOfSentences
 
 if __name__ == "__main__":
     if len(argv) == 1:
