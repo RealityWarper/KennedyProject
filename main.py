@@ -30,18 +30,12 @@ def GetEntries(word, dic):
 
     return entries
 
-def ExtractKeywords(question):
+def ExtractKeywords(question, dic, dic2):
     """Returns a list of X, Y and Z synonyms and their inflections
        from a given question string, expects "Kto X Y w Z?" format."""
 
     synonyms = [ [] , [] , [] ]
     weights = [ 60, 30, 20 ]
-
-    with open("odmiany.txt", "r") as dic:
-        dic = [ReplaceDiacritics(line) for line in dic.readlines()]
-
-    with open("thesaurus.txt", "r") as dic2:
-        dic2 = [ReplaceDiacritics(line) for line in dic2.readlines()]
 
     match = re.search("Kto (.+) (.+) w (.+)\?", ReplaceDiacritics(question))
     result = dict()
@@ -118,23 +112,22 @@ def WeightCounter(text_line, weights):
 
     return (weight, text_line)
 
-def GetSentences(text):
+def GetSentences(text, dic):
     """Returns a list of sentences from a given text."""
-	
+    
     ListOfSentences = []
     Sentence = ''
     Shortcuts = []
 
-    with open("odmiany.txt","r") as dic:
-        for line in dic.readlines():
-            word = line.split(';')[1]
-            if re.match('\w+\.', word):
-                Shortcuts.append(word)
-	
+    for line in dic:
+        word = line.split(';')[1]
+        if re.match('\w+\.', word):
+            Shortcuts.append(word)
+    
     wordList = text.split()
     for word in wordList:
         Sentence = Sentence + ' ' + word
-        if re.match('\w+[\.\?\!]', word) and not re.match('[0-9]{2}\.',word) and not re.match('[A-Z]\.',word) and word not in Shortcuts:
+        if re.match('[a-zA-Z0-9_\'\"\-]+[\.\?\!]', word) and not re.match('[0-9]{2}\.',word) and not re.match('[A-Z]\.',word) and word not in Shortcuts:
             ListOfSentences.append(Sentence.strip())
             Sentence = ''
 
@@ -146,17 +139,23 @@ if __name__ == "__main__":
 
     else:
         text_file = argv[1]
+        text = ''
 
         temp = raw_input("Dawaj pytanie: ")
 
         with open(text_file, "r") as src:
-            lines = src.readlines()
+            for line in src.readlines():
+                text = text + ReplaceDiacritics(line) + ' '
+            
+        with open("odmiany.txt", "r") as dic:
+            dic = [ReplaceDiacritics(line) for line in dic.readlines()]
 
-        lines = [ReplaceDiacritics(line) for line in lines]
+        with open("thesaurus.txt", "r") as dic2:
+            dic2 = [ReplaceDiacritics(line) for line in dic2.readlines()]
+        
+        keyword_weights = ExtractKeywords(temp,dic,dic2)
 
-        keyword_weights = ExtractKeywords(temp)
-
-        results = [WeightCounter(line, keyword_weights) for line in lines]
+        results = [WeightCounter(sentence, keyword_weights) for sentence in GetSentences(text,dic)]
 
         results.sort(reverse = True)
 
