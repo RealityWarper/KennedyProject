@@ -120,14 +120,14 @@ def GetSentences(text, dic):
     Shortcuts = []
 
     for line in dic:
-        word = line.split(';')[1]
-        if re.match('\w+\.', word):
-            Shortcuts.append(word)
+        for word in line.split(';'):
+            if re.match('[a-zA-Z0-9_\'\"\-\&\%\$\@\(\)]+\.', word):
+                Shortcuts.append(word)
     
     wordList = text.split()
     for word in wordList:
         Sentence = Sentence + ' ' + word
-        if re.match('[a-zA-Z0-9_\'\"\-]+[\.\?\!]', word) and not re.match('[0-9]{2}\.',word) and not re.match('[A-Z]\.',word) and word not in Shortcuts:
+        if re.match('[a-zA-Z0-9_\'\"\-\&\%\$\@\(\)]+[\.\?\!]', word) and not re.match('[0-9]{2}\.',word) and not re.match('[A-Z]\.',word) and word not in Shortcuts:
             ListOfSentences.append(Sentence.strip())
             Sentence = ''
 
