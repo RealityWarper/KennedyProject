@@ -2,7 +2,7 @@ import codecs
 import re
 
 BLOCKSIZE = 1048576 # 1 MB text buffer
-synonyms, inflections = {}, {} # global dictionaries
+synonyms, inflections, fetched = {}, {}, {} # global dictionaries
 
 def Unique(seq):
     """Returns a list of unique elements generated from a given object
@@ -12,6 +12,25 @@ def Unique(seq):
         if item not in seen:
             seen.add(item)
             yield item
+
+def GetBaseForm(word):
+    """Returns base form of a given word."""
+
+    if word in fetched:
+        return fetched[word]
+
+    elif "'" in word:
+        fetched[word] = word.split("'")[0]
+        return word.split("'")[0]
+
+    else:
+        for line in inflections:
+            if ";" + word + ";" in line:
+                fetched[word] = line.split(";")[1]
+                return line.split(";")[1]
+
+        fetched[word] = word
+        return word
 
 def GetEntries(word, dic):
     """Combs a dictionary for lines containing specified word.
@@ -39,7 +58,8 @@ def ExtractKeywords(question):
     result = dict()
 
     if match:
-        keywords = [GetEntries(word, inflections)[0] for word in match.group(1,2,3)]
+        keywords = [GetBaseForm(word) for word in match.group(1,2,3)]
+        GenSynonyms()
         keywords_and_synonyms = [GetEntries(word, synonyms) for word in keywords]
 
         for x in range(len(keywords_and_synonyms)):
@@ -48,7 +68,7 @@ def ExtractKeywords(question):
 
         for x in range(len(keywords_and_synonyms)):
             for element in keywords_and_synonyms[x]:
-               XYZ[x].extend(GetEntries(element, inflections))
+                XYZ[x].extend(GetEntries(element, inflections))
 
 
         for x in range(len(weights)):
@@ -102,15 +122,17 @@ def ReplaceDiacritics(string):
     return ReplaceAll(string, pol2eng)
 
 def WeightCounter(text_line, weights):
-    # liczy slowo pare razy jak powtarza sie rdzen
-    # nowy slownik to poprawi
     weight = 0
 
-    for key in weights:
-        if key in text_line:
-            weight += weights[key]
+    for word in SplitSentence(text_line):
+        if word in weights:
+            weight += weights[word]
 
-    return (weight, text_line)
+    if weight:
+        return (weight, text_line)
+
+    else:
+        return False
 
 def GetSentences(text, dic):
     """Returns a list of sentences from a given text."""
@@ -133,7 +155,23 @@ def GetSentences(text, dic):
 
     return ListOfSentences
 
+def SplitSentence(sentence):
+    """Removes everything except for alphanumeric characters and whitespaces
+       from a string, then splits it on whitespaces and returns the result."""
+
+    monster = sentence[:]
+
+    for char in sentence:
+        if not (str(char).isalnum() or str(char).isspace()):
+            tmp = monster.find(str(char))
+            monster = monster[:tmp] + monster[tmp+1:]
+
+    monster = monster.split()
+
+    return monster
+
 def LoadDictionaries():
+    """Loads dictionaries from files into global lists."""
     global synonyms
     global inflections
 
@@ -142,3 +180,61 @@ def LoadDictionaries():
 
     with open("thesaurus.txt", "r") as src:
         synonyms = [ReplaceDiacritics(line) for line in src.readlines()]
+
+def LoadInflections():
+    """Loads inflections dictionary from file into global list."""
+    global inflections
+
+    with open("odmiany.txt", "r") as src:
+        inflections = [ReplaceDiacritics(line) for line in src.readlines()]
+
+def GenSynonyms():
+    """Creates generator for synonyms."""
+    global synonyms
+
+    with open("thesaurus.txt", "r") as src:
+        synonyms = (ReplaceDiacritics(line) for line in src.readlines())
+
+def GetNames(text):
+    """Returns list of words that are capitalized, longer than one letter
+       and occur more than once in the text."""
+    prelims = [word for word in SplitSentence(text) if re.match("^[A-Z]", word)]
+
+    count = {}
+
+    for item in prelims:
+        tmp = GetBaseForm(item)
+        if len(tmp) < 2:
+            continue
+        if tmp in count:
+            count[tmp] += 1
+        else:
+            count[tmp] = 1
+
+    return [item for item in count if count[item] > 1]
+
+def CountUp(names, results, weights):
+    """Returns the score for every name candidate
+       over the sentences which contain keywords.
+
+       Base score multiplier is one and increases
+       0.2 for every additional candidate occurence."""
+    sums = []
+
+    for name in names:
+        if name in weights:
+            continue
+        score = 0
+        multi = 0.8
+        for result in results:
+            if name in result[1]:
+                score += result[0]
+                multi += 0.2
+        if score > 0:
+            score *= multi
+            sums.append((score, name))
+
+    return sums
+
+def AnswerTime(ans, X, Y, Z):
+    print("%s %s %s w %s." % (ans, X, Y, Z))
