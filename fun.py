@@ -52,7 +52,7 @@ def ExtractKeywords(question):
        from a given question string, expects "Kto X Y w Z?" format."""
 
     XYZ = [ [] , [] , [] ]
-    weights = [ 60, 30, 20 ]
+    weights = [ 90, 20, 10 ]
 
     match = re.search("Kto (.+) (.+) w (.+)\?", ReplaceDiacritics(question))
     result = dict()
