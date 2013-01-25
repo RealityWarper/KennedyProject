@@ -52,7 +52,7 @@ def ExtractKeywords(question):
        from a given question string, expects "Kto X Y w Z?" format."""
 
     XYZ = [ [] , [] , [] ]
-    weights = [ 90, 20, 10 ]
+    weights = [ 90, 150, 10 ]
 
     match = re.search("Kto (.+) (.+) w (.+)\?", ReplaceDiacritics(question))
     result = dict()
@@ -195,10 +195,17 @@ def GenSynonyms():
     with open("thesaurus.txt", "r") as src:
         synonyms = (ReplaceDiacritics(line) for line in src.readlines())
 
-def GetNames(text):
+def GetNames(results, text):
     """Returns list of words that are capitalized, longer than one letter
        and occur more than once in the text."""
-    prelims = [word for word in SplitSentence(text) if re.match("^[A-Z]", word)]
+
+    res_sent = ""
+    for sentence in results:
+        res_sent += ReplaceDiacritics(sentence[1]) + " "
+
+    prelims = [word for word in SplitSentence(res_sent) if re.match("^[A-Z]", word)]
+
+    prelims = [word for word in prelims if word.lower() not in text]
 
     count = {}
 

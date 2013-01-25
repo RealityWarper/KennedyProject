@@ -13,13 +13,13 @@ if __name__ == "__main__":
               .format(argv[0]))
 
     else:
-        print("Wczytytanie slownika odmian...")
+        print("Wczytywanie slownika odmian...")
         fun.LoadInflections()
 
         temp = raw_input("Dawaj pytanie [Kto zabil Kennedy'ego w Dallas?]: ")
         if not temp:
             temp = "Kto zabil Kennedy'ego w Dallas?"
-        print("Wydobywanie slow wkluczowych z pytania...")
+        print("Wydobywanie slow kluczowych z pytania...")
         keyword_weights = fun.ExtractKeywords(temp)
 
         if(argv[1] == '-l'):
@@ -35,20 +35,20 @@ if __name__ == "__main__":
                 text = src.read()
 
         text = fun.ReplaceDiacritics(text)
-        
+
         print("Obliczanie wag dla poszczegolnych zdan w tekscie...")
         results = [fun.WeightCounter(sentence, keyword_weights) for sentence in fun.GetSentences(text,fun.inflections)]
         results = [result for result in results if result]
 
         results.sort(reverse = True)
-        
+
         print("Wyszukiwanie nazwisk w tekscie...")
-        names = fun.GetNames(text)
+        names = fun.GetNames(results, text)
 
         print("Obliczanie wag dla nazwisk na podstawie wagi zdan, w ktorych dane nazwisko wystepuje")
         sums = fun.CountUp(names, results, keyword_weights)
         sums.sort(reverse = True)
-        
+
         print("Wynik:")
         for el in sums:
             print("%s - %d" % (el[1], el[0]))
